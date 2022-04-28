@@ -58,9 +58,13 @@ import InputMessage from '@/Pages/Chat/inputMessage.vue';
      watch: {
        
 
-       currentRoom() {
+       currentRoom(val, oldVal) {
+
+               if(oldVal.id) {
 
 
+                   this.disconnect(oldVal);
+               }
            this.connect();
        }
 
@@ -75,12 +79,20 @@ import InputMessage from '@/Pages/Chat/inputMessage.vue';
                  let vm = this;
                  this.getMessages();
                  window.Echo.private("chat." + this.currentRoom.id)
-                 .listen('.message.new' , e => {
+                 .listen('.message.new', e => {
 
 
                      vm.getMessages();
                  });
             }
+            },
+
+            disconnect(room ) {
+
+                    
+                        window.Echo.leave( "chat." + room.id ); 
+                      
+
             },
 
             getRooms() {

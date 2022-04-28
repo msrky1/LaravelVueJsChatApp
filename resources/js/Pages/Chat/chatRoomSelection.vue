@@ -11,7 +11,7 @@
 
     <option 
     v-for = "(room, index ) in rooms "
-    :key = "imdex"
+    :key = "index"
      :value = "room"
      >
            {{room.name}}

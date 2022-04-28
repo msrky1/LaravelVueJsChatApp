@@ -6,13 +6,14 @@ use Illuminate\Http\Request;
 use App\Models\ChatMessage;
 use App\Models\ChatRoom;
 use Illuminate\Support\Facades\Auth;
-use App\Event\NewChatMessage;
+use App\Events\NewChatMessage;
 
 class ChatController extends Controller
 {
      public function rooms(Request $request) {
 
-            
+    //  DB::table('chat_messages')->truncate();
+
         return ChatRoom::all();
 
 
@@ -21,7 +22,6 @@ class ChatController extends Controller
      public function messages(Request $request, $roomId) {
 
 
-           //   DB::table('chat_messages')->truncate();
 
         return ChatMessage::where('chat_room_id' , $roomId)
         ->with('user')
@@ -36,10 +36,13 @@ class ChatController extends Controller
              $newMessage->user_id = Auth::id();
              $newMessage->chat_room_id = $roomId;
              $newMessage->message = $request->message;
+
              $newMessage->save();
 
+             broadcast(new NewChatMessage( $newMessage ))->toOthers();
+
              return $newMessage;
-             broadcast(new NewChatMessage($newMessage))->toOthers();
+
 
      }
 }
